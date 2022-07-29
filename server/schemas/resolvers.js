@@ -51,11 +51,11 @@ const resolvers = {
             const token = signToken(user);
             return { token, user };
         },
-          addBook: async (parent, { _id, title }, context) => {
+          addBook: async (parent, { user, body }, context) => {
             if (context.user) {
-              const updatedBooks = await Book.findOneAndUpdate(
-                { _id: _id },
-                { $push: { savedBooks: { title, username: context.user.username } } },
+              const updateUser = await User.findOneAndUpdate(
+                { _id: user._id },
+                { $addToSet: { savedBooks: body } },
                 { new: true, runValidators: true }
               );
           
@@ -70,7 +70,7 @@ const resolvers = {
                 const user = context.user;
                 
                 try {
-                    const book = await Book.findById(_id);
+                    const updatedUser = await User.findById(_id);
                     console.log(book);
                     if (user.username === book.username) {
                         await book.delete();
