@@ -26,6 +26,10 @@ const bookSchema = new Schema({
     type: String,
     required: true,
   },
+  username: {
+    type: String,
+    required: true
+  }
 });
 
 module.exports = bookSchema;
