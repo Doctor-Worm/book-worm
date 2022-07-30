@@ -1,3 +1,13 @@
+import { from, useMutation, useQuery } from "@apollo/client";
+import { ADD_USER, ADD_BOOK, REMOVE_BOOK } from "./mutations"
+import { QUERY_ME, QUERY_BOOK } from "./queries";
+
+const [addUser] = useMutation(ADD_USER);
+const [addBook] = useMutation(ADD_BOOK);
+const [removeBook] = useMutation(REMOVE_BOOK);
+
+
+
 // route to get logged in user's info (needs the token)
 export const getMe = (token) => {
   return fetch('/api/users/me', {
