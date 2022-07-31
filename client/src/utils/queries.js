@@ -13,7 +13,6 @@ export const QUERY_USER = gql`
         description
         bookId
         image
-        link
         title
         username
       }
@@ -34,7 +33,6 @@ export const QUERY_USERS = gql`
         description
         bookId
         image
-        link
         title
         username
       }
@@ -55,7 +53,6 @@ export const QUERY_ME = gql`
         description
         bookId
         image
-        link
         title
         username
       }
@@ -64,14 +61,13 @@ export const QUERY_ME = gql`
 `;
 
 export const QUERY_BOOK = gql`
-  query book($id: ID!) {
-    book(_id: $id) {
+  query book($bookId: ID!) {
+    book(bookId: $id) {
         _id
         authors
         description
         bookId
         image
-        link
         title
         username
     }
