@@ -7,6 +7,7 @@ import Auth from '../utils/auth';
 import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
 
 import { ADD_BOOK } from '../utils/mutations';
+import { QUERY_BOOKS, QUERY_ME } from '../utils/queries';
 // import { QUERY_ME } from '../utils/queries';
 
 const SearchBooks = () => {
@@ -14,8 +15,27 @@ const SearchBooks = () => {
   const [searchedBooks, setSearchedBooks] = useState([]);
   // create state for holding our search field data
   const [searchInput, setSearchInput] = useState('');
+  
+  const [addBook] = useMutation(ADD_BOOK, {
+    update(cache, { data: { addBook }}) {
 
-  const [addBook] = useMutation(ADD_BOOK);
+      try {
+        const { me } = cache.readQuery({ query: QUERY_ME });
+        cache.writeQuery({
+          query: QUERY_ME,
+          data: { me: { ...me, savedBooks: [...me.savedBooks, addBook] } },
+        });
+      } catch (e) {
+        console.warn("First book insertion by user!")
+      }
+
+      const { savedBooks } = cache.readQuery({ query: QUERY_BOOKS });
+      cache.writeQuery({
+        query: QUERY_BOOKS,
+        data: { savedBooks: [addBook, ...savedBooks] }
+      });
+    }
+  });
   // const [queryMe] = useQuery(QUERY_ME);
 
   // create state to hold saved bookId values
@@ -65,7 +85,8 @@ const SearchBooks = () => {
   };
 
   // create function to handle saving a book to our database
-  const handleSaveBook = async (bookId) => {
+  const handleSaveBook = async (event, bookId) => {
+    event.preventDefault();
     // find the book in `searchedBooks` state by the matching id
     const bookToSave = searchedBooks.find((book) => book.bookId === bookId);
     console.log(bookToSave);
@@ -79,9 +100,10 @@ const SearchBooks = () => {
 
     try {
       await addBook({
-        variables: { ...bookToSave }
+        variables: { bookToSave }
+        // variables: {authors: bookToSave.authors, bookId: bookToSave.bookId, title: bookToSave.title, description: bookToSave.description, image: bookToSave.image4}
       });
-
+      console.log(bookToSave);
       // if book successfully saves to user's account, save book id to state
       setSavedBookIds([...savedBookIds, bookToSave.bookId]);
     } catch (err) {

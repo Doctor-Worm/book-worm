@@ -12,42 +12,66 @@ import { REMOVE_BOOK } from '../utils/mutations';
 const SavedBooks = () => {
   const [userData, setUserData] = useState({});
 
-  const [queryMe] = useQuery(QUERY_ME);
+  // const { data, loading, error } = useQuery(QUERY_ME);
   const [removeBook] = useMutation(REMOVE_BOOK);
 
+  const { data, loading, error } = useQuery(QUERY_ME);
+
+  // console.log(data);
+  const user = data?.me || data?.user || {};
+  console.log(user);
+  // setUserData(user);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if(error) return `Error! ${error.message}`;
+
+  // keeps someone from going to /profile while not logged in
+  if (!user?.username) {
+    return (
+      <h4>
+        You need to be logged in to see this page. Use the navigation links above to sign up or log in!
+      </h4>
+    );
+  }
+
+  // console.log(userData);
+
   // use this to determine if `useEffect()` hook needs to run again
-  const userDataLength = Object.keys(userData).length;
+  // const userDataLength = Object.keys(userData).length;
 
-  useEffect(() => {
-    const getUserData = async () => {
-      try {
-        const token = Auth.loggedIn() ? Auth.getToken() : null;
+  // useEffect(() => {
+  //   const getUserData = async () => {
+  //     try {
+  //       const token = Auth.loggedIn() ? Auth.getToken() : null;
 
-        if (!token) {
-          return false;
-        }
+  //       if (!token) {
+  //         return false;
+  //       }
 
-        // const response = await queryMe(token);
-        const response = await queryMe(token);
+  //       // const response = await queryMe(token);
+  //       const response = await queryMe(token);
 
 
-        if (!response.ok) {
-          throw new Error('something went wrong!');
-        }
+  //       if (!response.ok) {
+  //         throw new Error('something went wrong!');
+  //       }
 
-        const user = await response.json();
-        console.log(user);
-        setUserData(user);
-      } catch (err) {
-        console.error(err);
-      }
-    };
+  //       const user = await response.json();
+  //       console.log(user);
+  //       setUserData(user);
+  //     } catch (err) {
+  //       console.error(err);
+  //     }
+  //   };
 
-    getUserData();
-  }, [userDataLength]);
+  //   getUserData();
+  // }, [userDataLength]);
 
   // create function that accepts the book's mongo _id value as param and deletes the book from the database
-  const handleDeleteBook = async (_id) => {
+  const handleDeleteBook = async (bookId) => {
     const token = Auth.loggedIn() ? Auth.getToken() : null;
 
     if (!token) {
@@ -55,7 +79,7 @@ const SavedBooks = () => {
     }
 
     try {
-      const response = await removeBook(_id);
+      const response = await removeBook(bookId);
 
       if (!response.ok) {
         throw new Error('something went wrong!');
@@ -70,10 +94,10 @@ const SavedBooks = () => {
     }
   };
 
-  // if data isn't here yet, say so
-  if (!userDataLength) {
-    return <h2>LOADING...</h2>;
-  }
+  // // if data isn't here yet, say so
+  // if (!userDataLength) {
+  //   return <h2>LOADING...</h2>;
+  // }
 
   return (
     <>
@@ -84,12 +108,12 @@ const SavedBooks = () => {
       </Jumbotron>
       <Container>
         <h2>
-          {userData.savedBooks.length
-            ? `Viewing ${userData.savedBooks.length} saved ${userData.savedBooks.length === 1 ? 'book' : 'books'}:`
+          {user.savedBooks.length
+            ? `Viewing ${user.savedBooks.length} saved ${user.savedBooks.length === 1 ? 'book' : 'books'}:`
             : 'You have no saved books!'}
         </h2>
         <CardColumns>
-          {userData.savedBooks.map((book) => {
+          {user.savedBooks.map((book) => {
             return (
               <Card key={book.bookId} border='dark'>
                 {book.image ? <Card.Img src={book.image} alt={`The cover for ${book.title}`} variant='top' /> : null}

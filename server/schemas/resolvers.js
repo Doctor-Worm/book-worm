@@ -55,15 +55,17 @@ const resolvers = {
           addBook: async (parent, args, context) => {
             if (context.user) {
               console.log({...args});
+              console.log(context.user);
               const book = await Book.create({ ...args, username: context.user.username });
-              
+              console.log('sandwich');
               await User.findByIdAndUpdate(
                 { _id: context.user._id },
-                { $push: { savedBooks: book } },
+                { $addToSet: { savedBooks: book } },
                 { new: true, runValidators: true }
               );
 
               console.log(book);
+              console.log('^this the book');
               return book;
             }
           
