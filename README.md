@@ -18,6 +18,6 @@ As an avid reader, I want to search for new books to read so that I can keep a l
 
 - **[Link to the GitHub Repository](https://github.com/Doctor-Worm/book-worm)**
 
-- **[Link to Deployed App](https://doctor-worm.github.io/book-worm/)**
+- **[Link to Deployed App](https://glacial-plateau-63448.herokuapp.com/)**
 
 ![Screenshot of Book Worm App](./images/localhost_3000_.png)
